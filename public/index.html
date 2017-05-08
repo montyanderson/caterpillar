@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css" rel="stylesheet">
+
+		<style>
+		.key {
+			height: 20rem !important;
+		}
+
+		#messages {
+			height: 500px;
+			overflow: scroll;
+		}
+		</style>
+
+	</head>
+	<body>
+
+		<div class="container">
+			<div id="app" class="container">
+				<h1>facefuck</h1>
+
+				<div v-if="id" class="row">
+					<div v-if="auth">
+						<ul id="messages">
+							<li v-for="message in messages">
+								<font v-bind:color="message.color">{{message.text}}</font>
+							</li>
+						</ul>
+
+						<input v-model="newMessageText" v-on:keyup.enter="sendMessage">
+					</div>
+
+					<div v-else>
+						<div class="row">
+							<div class="col s12 m6">
+								<textarea class="key" readonly>{{publicKey}}</textarea>
+							</div>
+
+							<div class="col s12 m6" rows="50">
+								<textarea class="key" v-model="recipientPublicKey" placeholder="Send the key on the left to your recipeint, and put their key here."></textarea>
+							</div>
+						</div>
+
+						<br>
+						<button v-on:click="keyExchange">Go!</button>
+					</div>
+				</div>
+
+
+				<div v-else>
+					<a href="/new" class="btn btn-primary">Start a new chat!</a>
+				</div>
+
+				<br><br>
+				<p><i><a href="/">facefuck</a></i> uses the <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie–Hellman</a> key-exchange algorithm to derive a common secret, the <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-256</a> algorithm to derive the subsequent 256-bit hash, followed by <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard#Implementations">AES-256</a> (<a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">CBC mode</a>) for encryption of messages.
+			</div>
+		</div>
+
+		<script src="index.js"></script>
+
+	</body>
+</html>
