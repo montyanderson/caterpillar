@@ -13,6 +13,10 @@
 			height: 500px;
 			overflow: scroll;
 		}
+
+		.url {
+			text-align: center;
+		}
 		</style>
 
 	</head>
@@ -35,6 +39,8 @@
 
 					<div v-else>
 						<div class="row">
+							<h5 class="url green-text">{{href}}</h5>
+
 							<div class="col s12 m6">
 								<textarea class="key" readonly>{{publicKey}}</textarea>
 							</div>
@@ -56,6 +62,8 @@
 
 				<br><br>
 				<p><i><a href="/">facefuck</a></i> uses the <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie–Hellman</a> key-exchange algorithm to derive a common secret, the <a href="https://en.wikipedia.org/wiki/SHA-2">SHA-256</a> algorithm to derive the subsequent 256-bit hash, followed by <a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard#Implementations">AES-256</a> (<a href="https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation">CBC mode</a>) for encryption of messages.
+				</p>
+				<p>Send donations to <a href="https://blockchain.info/address/1BJTnFuRFkGD5NJuk2Td2dydr7GTAwkbiq">1BJTnFuRFkGD5NJuk2Td2dydr7GTAwkbiq</a>.</p>
 			</div>
 		</div>
 

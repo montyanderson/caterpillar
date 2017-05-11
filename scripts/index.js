@@ -68,7 +68,8 @@ const app = window.app = new Vue({
 		recipientPublicKey: "",
 		messages: [],
 		auth: false,
-		newMessageText: ""
+		newMessageText: "",
+		href: location.href
 	},
 	methods: {
 		keyExchange() {
