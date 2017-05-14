@@ -65,4 +65,4 @@ io.on("connection", socket => {
 	});
 });
 
-server.listen(process.argv[2] || 8080);
+server.listen(process.argv[2] || 8080, process.argv[3] || "0.0.0.0");
