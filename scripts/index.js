@@ -38,6 +38,14 @@ function sha256(data) {
 let socket, chatId, userKey, sharedSecret, sharedKey;
 
 function encrypt(data) {
+	if(!(sharedKey instanceof Buffer)) {
+		throw new Error("Shared key not defined.")
+	}
+
+	if(sharedKey.length != 32) {
+		throw new Error("Shared key not proper length.");
+	}
+
 	const iv = sha256(crypto.randomBytes(64)).slice(0, 16);
 	const cipher = crypto.createCipheriv("aes-256-cbc", sharedKey, iv);
 
