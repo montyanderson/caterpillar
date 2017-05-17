@@ -29,15 +29,13 @@ function createDHInstance() {
 	return crypto.createDiffieHellman(prime, "hex");
 }
 
-const dh = createDHInstance();
-let sharedSecret;
-let sharedKey;
-
 function sha256(data) {
 	const hash = crypto.createHash("sha256");
 	hash.update(data);
 	return hash.digest();
 }
+
+let socket, chatId, userKey, sharedSecret, sharedKey;
 
 function encrypt(data) {
 	const iv = sha256(crypto.randomBytes(64)).slice(0, 16);
@@ -56,14 +54,11 @@ function decrypt(data) {
 	return decipher.update(data, "base64", "utf8") + decipher.final("utf8");
 }
 
-const rawMessages = [];
-
-let socket;
-
 const app = window.app = new Vue({
 	el: "#app",
 	data: {
-		id: location.search.slice(1) || false,
+		setup: false,
+		chatId: false,
 		publicKey: "",
 		recipientPublicKey: "",
 		messages: [],
@@ -72,17 +67,52 @@ const app = window.app = new Vue({
 		href: location.href
 	},
 	methods: {
+		startSetup() {
+			userKey = createDHInstance();
+			userKey.generateKeys();
+
+			console.log(`DH Public Key: ${userKey.getPrivateKey().toString("base64")}`);
+			chatId = sha256(crypto.randomBytes(64));
+			console.log(`Initial Chat ID: ${chatId.toString("base64")}`)
+
+			app.publicKey = Buffer.concat([ chatId, userKey.getPublicKey() ]).toString("base64");
+			console.log(`Public Key: ${app.publicKey}`);
+
+			this.setup = true;
+		},
 		keyExchange() {
-			console.log(app.recipientPublicKey);
-			sharedSecret = dh.computeSecret(Buffer.from(app.recipientPublicKey, "base64"));
+			console.log(`Recipient Public Key: ${app.recipientPublicKey}`);
+			const data = Buffer.from(app.recipientPublicKey, "base64");
+			const recipientKey = data.slice(32);
+
+			console.log(`Recipient DH Public Key: ${recipientKey.toString("base64")}`);
+
+			for(let i = 0; i < 32; i++) {
+				chatId[i] ^= data[i];
+			}
+
+			console.log(`Final Chat ID: ${chatId.toString("base64")}`)
+
+			sharedSecret = userKey.computeSecret(recipientKey);
 			sharedKey = sha256(sharedSecret);
 			app.auth = true;
 
-			app.messages = rawMessages.map(message => {
-				return {
+			socket = io(location.origin);
+			socket.emit("id", chatId.toString("base64"));
+
+			const colors = [ "#e74c3c", "#3498db" ];
+
+			socket.on("message", message => {
+				app.messages.push({
 					text: decrypt(message.text),
 					color: colors[message.user]
-				};
+				});
+
+				const messagesElement = document.querySelector("#messages");
+
+				setTimeout(() => {
+					messagesElement.scrollTop = messagesElement.scrollHeight + 100;
+				}, 0);
 			});
 		},
 		sendMessage() {
@@ -91,35 +121,3 @@ const app = window.app = new Vue({
 		}
 	}
 });
-
-
-if(app.id) {
-	document.addEventListener("DOMContentLoaded", () => {
-		app.publicKey = dh.generateKeys().toString("base64");
-		window.dh = dh;
-	}, false);
-
-	socket = io(location.origin);
-	socket.emit("id", app.id);
-
-	const colors = [ "#e74c3c", "#3498db" ];
-
-	socket.on("message", message => {
-		if(app.auth) {
-			app.messages.push({
-				text: decrypt(message.text),
-				color: colors[message.user]
-			});
-
-			const messagesElement = document.querySelector("#messages");
-
-			setTimeout(() => {
-				messagesElement.scrollTop = messagesElement.scrollHeight + 100;
-			}, 0);
-		} else {
-			rawMessages.push(message);
-		}
-	});
-}
-
-//app.publicKey = dh.getPublicKey("base64");

@@ -24,9 +24,9 @@
 
 		<div class="container">
 			<div id="app" class="container">
-				<h1>facefuck</h1>
+				<h1><a href="/">facefuck</a></h1>
 
-				<div v-if="id" class="row">
+				<div v-if="setup" class="row">
 					<div v-if="auth">
 						<ul id="messages">
 							<li v-for="message in messages">
@@ -39,8 +39,6 @@
 
 					<div v-else>
 						<div class="row">
-							<h5 class="url green-text">{{href}}</h5>
-
 							<div class="col s12 m6">
 								<textarea class="key" readonly>{{publicKey}}</textarea>
 							</div>
@@ -57,7 +55,7 @@
 
 
 				<div v-else>
-					<a href="/new" class="btn btn-primary">Start a new chat!</a>
+					<a v-on:click="startSetup" class="btn btn-primary">Start a new chat!</a>
 				</div>
 
 				<br><br>

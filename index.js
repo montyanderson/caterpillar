@@ -13,7 +13,11 @@ function sha256(data) {
 }
 
 app.get("/new", (req, res) => {
-	const id = sha256(crypto.randomBytes(64)).toString("base64");
+	const id = sha256(crypto.randomBytes(64))
+		.toString("base64")
+		.replace(new RegExp("+", "g"), "-")
+		.replace(new RegExp("/", "g"), "_");
+
 	res.redirect("/?" + id);
 });
 
