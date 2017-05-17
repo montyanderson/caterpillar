@@ -36,6 +36,7 @@ function sha256(data) {
 }
 
 let socket, chatId, userKey, sharedSecret, sharedKey;
+let messagesWaiting = 0;
 
 function encrypt(data) {
 	if(!(sharedKey instanceof Buffer)) {
@@ -121,6 +122,11 @@ const app = window.app = new Vue({
 				setTimeout(() => {
 					messagesElement.scrollTop = messagesElement.scrollHeight + 100;
 				}, 0);
+
+				if(document.hidden) {
+					messagesWaiting++;
+					document.title = `(${messagesWaiting}) facefuck`;
+				}
 			});
 		},
 		sendMessage() {
@@ -129,3 +135,11 @@ const app = window.app = new Vue({
 		}
 	}
 });
+
+
+document.addEventListener("visibilitychange", () => {
+	if(!document.hidden) {
+		messagesWaiting = 0;
+		document.title = "facefuck";
+	}
+}, false);

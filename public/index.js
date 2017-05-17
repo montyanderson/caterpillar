@@ -38763,8 +38763,17 @@ var socket = void 0,
     userKey = void 0,
     sharedSecret = void 0,
     sharedKey = void 0;
+var messagesWaiting = 0;
 
 function encrypt(data) {
+	if (!(sharedKey instanceof Buffer)) {
+		throw new Error("Shared key not defined.");
+	}
+
+	if (sharedKey.length != 32) {
+		throw new Error("Shared key not proper length.");
+	}
+
 	var iv = sha256(crypto.randomBytes(64)).slice(0, 16);
 	var cipher = crypto.createCipheriv("aes-256-cbc", sharedKey, iv);
 
@@ -38840,6 +38849,11 @@ var app = window.app = new Vue({
 				setTimeout(function () {
 					messagesElement.scrollTop = messagesElement.scrollHeight + 100;
 				}, 0);
+
+				if (document.hidden) {
+					messagesWaiting++;
+					document.title = "(" + messagesWaiting + ") facefuck";
+				}
 			});
 		},
 		sendMessage: function sendMessage() {
@@ -38848,6 +38862,13 @@ var app = window.app = new Vue({
 		}
 	}
 });
+
+document.addEventListener("visibilitychange", function () {
+	if (!document.hidden) {
+		messagesWaiting = 0;
+		document.title = "facefuck";
+	}
+}, false);
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":51,"crypto":62,"socket.io-client":167,"vue":188}]},{},[191]);
